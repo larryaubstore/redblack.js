@@ -13,6 +13,13 @@
     
     "devDependencies": {
         "mocha": ">= 0.9.0",
-        "uglify-js": ">= 1.2.4"
+        "uglify-js": ">= 1.2.4",
+        "jasmine-node": "1.14.2"
+    }, 
+
+    "scripts": {
+        "test": "sudo jasmine-node test/spec",
+        "testdebug": "sudo node debug node_modules/jasmine-node/lib/jasmine-node/cli.js test/spec/"
     }
+
 }

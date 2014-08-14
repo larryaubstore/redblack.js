@@ -101,7 +101,12 @@
         var node = find(this.root, key);
         return node === null ? null : node.value;
     };
-    
+
+    Tree.prototype.getnode = function(key) {
+        var node = find(this.root, key);
+        return node === null ? null : node;
+    };
+   
     Tree.prototype.insert = function(key, value) {
         var newNode = new Node(key, value);
         
