@@ -34,6 +34,8 @@
         this.left = null;
         this.right = null;
         this.parent = null;
+        this.count = 1;
+        this.average = 0;
     };
     
     Node.prototype.grandparent = function() {
@@ -162,6 +164,7 @@
             var node = this.root;
             
             while (true) {
+                node.count = node.count + 1;
                 if (key < node.key) {
                     if (node.left === null) {
                         node.left = newNode;
@@ -198,6 +201,9 @@
             
             node.key = pred.key;
             node.value = pred.value;
+  
+            // node is deleted
+            node.count = pred.count - node.count;
             node = pred;
         }
         

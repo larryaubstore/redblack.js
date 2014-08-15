@@ -101,4 +101,55 @@ describe("Basics tests", function () {
       expect(anode).not.toBeUndefined();
       expect(anode.left).toEqual(null);
   });
+
+  it("Pruning", function () {
+
+      var tree = redblack.tree();
+
+      tree.insert(50, "test");
+      tree.insert(6, "test");
+      tree.insert(98, "test");
+      tree.insert(2, "test");
+      tree.insert(76, "test");
+      tree.insert(55, "test");
+
+      var anode = tree.getnode(50);
+
+      expect(anode).not.toBeUndefined();
+      expect(anode.left.key).toEqual(6);
+      expect(anode.right.key).toEqual(76);
+
+      tree.prune(76);
+      anode = tree.getnode(6);
+
+      expect(anode).not.toBeUndefined();
+      expect(anode.left).toEqual(null);
+  });
+
+
+  it("Count", function () {
+    /*
+     *                                   50 (av = (50 + 6 + 2 + 76 + 55 ) / 5; count = 5 )
+     *                                  /  \
+     *                                 /    \
+     * (av = (6 + 2) / 2; count = 2)  6     98 (av = ( 98 + 76 ) / 2; count = 2 ) 
+     *                               /     /  \
+     * (av = 2; count = 1 )         2     76   (av = 76; count = 1)
+     */
+      var tree = redblack.tree();
+
+      tree.insert(50, "test");
+      tree.insert(6, "test");
+      tree.insert(98, "test");
+      tree.insert(2, "test");
+      tree.insert(76, "test");
+
+      var anode = tree.getnode(50);
+
+      expect(anode).not.toBeUndefined();
+      expect(anode.count).toEqual(5);
+  });
+
+
+
 });
