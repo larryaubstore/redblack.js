@@ -74,7 +74,7 @@
             }
         };
     };
-    
+
     Cursor.prototype.forEach = function(iterator) {
         this.walk(this.tree.root, iterator);
     };
@@ -87,6 +87,52 @@
         });
         
         return results;
+    };
+
+    // PruneCursor
+    // ---------------
+
+    function PruneCursor(start) {
+        
+        var self = this;
+
+        this.walk = function walk(node) {
+            if (node === null) return;
+
+            if (start !== undefined && node.key <= start) {
+              if(node.color == RED) {
+                var parent = node.parent;
+                if(parent != null) {
+                  parent.left = null;
+                }
+              } else {
+                walk(node.left);
+              }
+            } else {
+                walk(node.left);
+            } 
+        };
+    };
+
+    function Cursor(tree, start, end) {
+        this.tree = tree;
+        this.start = start;
+        this.end = end;
+        
+        var self = this;
+        this.walk = function walk(node, iterator) {
+            if (node === null) return;
+            
+            if (start !== undefined && node.key < start) {
+                walk(node.right, iterator);
+            } else if (end !== undefined && node.key > end) {
+                walk(node.left, iterator);
+            } else {
+                walk(node.left, iterator);
+                iterator(node.value, node.key, self.tree);
+                walk(node.right, iterator);
+            }
+        };
     };
     
     // Tree
@@ -167,10 +213,16 @@
             this.root.color = BLACK;
         }
     };
+
+    Tree.prototype.prune = function(start) {
+      var prunecursor = new PruneCursor(start);
+      prunecursor.walk(this.root);
+    };
     
     Tree.prototype.range = function(start, end) {
         return new Cursor(this, start, end);
     };
+
     
     // Proxy cursor methods
     for (var method in Cursor.prototype) {
