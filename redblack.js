@@ -194,16 +194,16 @@
     Tree.prototype.delete = function(key) {
         var node = find(this.root, key);
         if (node === null) return;
-        
+
+        // Decrement count 
+        find(this.root, key, true);
+
         if (node.left !== null && node.right !== null) {
             var pred = node.left;
             while (pred.right !== null) pred = pred.right;
             
             node.key = pred.key;
             node.value = pred.value;
-  
-            // node is deleted
-            node.count = pred.count - node.count;
             node = pred;
         }
         
@@ -275,6 +275,36 @@
     Balancer.prototype.rotateLeft = function(node) {
         var right = node.right;
         this.replaceNode(node, right);
+
+
+        /*      x                 y
+         *     / \               / \
+         *    a   y      ==>    x   c
+         *       / \           / \
+         *      b   c         a   b
+
+         *    node is x
+         *    y is node.right
+         *    a is node.left
+         *    b is right.left
+         *    c is right.right
+         *
+         *    node = node + b
+         *    right = right - b 
+         */
+
+
+        var a = node.left;
+        var b = right.left;
+        var c = right.right;
+
+        if(node !== null && b !== null) {
+          node.count = node.count + b.count;
+        }
+
+        if(right !== null && b !== null) {
+          right.count = right.count - b.count;
+        }   
         
         // Update pointers
         node.right = right.left;
@@ -286,6 +316,36 @@
     Balancer.prototype.rotateRight = function(node) {
         var left = node.left;
         this.replaceNode(node, left);
+
+
+        /*        y              x 
+         *       / \            / \
+         *      x   c    ==>   a   y
+         *     / \                / \
+         *    a   b              b   c
+         *
+         *   node is y
+         *   x is node.left
+         *
+         *   a is left.left
+         *   b is left.right
+         *   c is node.right
+
+         *   left = left + c
+         *   node = node - a
+         */
+
+        var a = left.left;
+        var b = left.right;
+        var c = node.right;
+
+        if(left !== null && c !== null) {
+          left.count = left.count + c.count;
+        } 
+
+        if(node !== null && a !== null) {
+          node.count = node.count - a.count;
+        }
         
         // Update pointers
         node.left = left.right;
@@ -447,8 +507,13 @@
         return node === null ? BLACK : node.color;
     };
     
-    function find(node, key) {
+    function find(node, key, decrement) {
+
         while (node !== null) {
+            if(typeof(decrement) !== "undefined") {
+              node.count = node.count - 1;
+            }
+
             if (key === node.key) {
                 return node;
             } else if (key < node.key) {

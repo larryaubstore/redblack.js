@@ -127,15 +127,7 @@ describe("Basics tests", function () {
   });
 
 
-  it("Count", function () {
-    /*
-     *                                   50 (av = (50 + 6 + 2 + 76 + 55 ) / 5; count = 5 )
-     *                                  /  \
-     *                                 /    \
-     * (av = (6 + 2) / 2; count = 2)  6     98 (av = ( 98 + 76 ) / 2; count = 2 ) 
-     *                               /     /  \
-     * (av = 2; count = 1 )         2     76   (av = 76; count = 1)
-     */
+  it("Count for delete scenario", function () {
       var tree = redblack.tree();
 
       tree.insert(50, "test");
@@ -143,11 +135,16 @@ describe("Basics tests", function () {
       tree.insert(98, "test");
       tree.insert(2, "test");
       tree.insert(76, "test");
+      tree.insert(55, "test");
 
       var anode = tree.getnode(50);
 
       expect(anode).not.toBeUndefined();
+      expect(anode.count).toEqual(6);
+
+      tree.delete(55);
       expect(anode.count).toEqual(5);
+
   });
 
 
