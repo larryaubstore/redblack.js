@@ -1,3 +1,5 @@
+var cursor = require('./lib/cursor');
+
 (function() {
     
     var redblack = {};
@@ -53,92 +55,6 @@
         return this.parent.sibling();
     };
     
-    // Cursor
-    // ---------------
-    
-    function Cursor(tree, start, end) {
-        this.tree = tree;
-        this.start = start;
-        this.end = end;
-        
-        var self = this;
-        this.walk = function walk(node, iterator) {
-            if (node === null) return;
-            
-            if (start !== undefined && node.key < start) {
-                walk(node.right, iterator);
-            } else if (end !== undefined && node.key > end) {
-                walk(node.left, iterator);
-            } else {
-                walk(node.left, iterator);
-                iterator(node.value, node.key, self.tree);
-                walk(node.right, iterator);
-            }
-        };
-    };
-
-    Cursor.prototype.forEach = function(iterator) {
-        this.walk(this.tree.root, iterator);
-    };
-    
-    Cursor.prototype.map = function(iterator) {
-        var results = [];
-        
-        this.forEach(function(value, key, tree) {
-            results.push(iterator(value, key, tree));
-        });
-        
-        return results;
-    };
-
-    // PruneCursor
-    // ---------------
-
-    function PruneCursor(start) {
-        
-        var self = this;
-
-        this.walk = function walk(node) {
-            if (node === null) return;
-
-            if (start !== undefined && node.key <= start) {
-              if(node.color == RED) {
-                var parent = node.parent;
-                if(parent != null) {
-                  parent.left = null;
-                }
-              } else {
-                walk(node.left);
-              }
-            } else {
-                walk(node.left);
-            } 
-        };
-    };
-
-    function Cursor(tree, start, end) {
-        this.tree = tree;
-        this.start = start;
-        this.end = end;
-        
-        var self = this;
-        this.walk = function walk(node, iterator) {
-            if (node === null) return;
-            
-            if (start !== undefined && node.key < start) {
-                walk(node.right, iterator);
-            } else if (end !== undefined && node.key > end) {
-                walk(node.left, iterator);
-            } else {
-                walk(node.left, iterator);
-                iterator(node.value, node.key, self.tree);
-                walk(node.right, iterator);
-            }
-        };
-    };
-    
-    // Tree
-    // ---------------
     
     function Tree() {
         this.root = null;
@@ -221,25 +137,31 @@
     };
 
     Tree.prototype.prune = function(start) {
-      var prunecursor = new PruneCursor(start);
-      prunecursor.walk(this.root);
+      //var prunecursor = new PruneCursor(start);
+      //prunecursor.walk(this.root);
+
+      var heightcursor = new cursor.HeightCursor(start);
+      var blackheight = heightcursor.walk(this.root, 0);
+
+      var prunecursor = new cursor.PruneCursor(blackheight);
+      prunocursor.walk(this.root);
     };
     
     Tree.prototype.range = function(start, end) {
-        return new Cursor(this, start, end);
+        return new cursor.Cursor(this, start, end);
     };
 
     
     // Proxy cursor methods
-    for (var method in Cursor.prototype) {
-        if (Cursor.prototype.hasOwnProperty(method)) {
-            var func = Cursor.prototype[method];
-            Tree.prototype[method] = function() {
-                var cursor = new Cursor(this);
-                return func.apply(cursor, arguments);
-            };
-        }
-    }
+//    for (var method in Cursor.prototype) {
+//        if (Cursor.prototype.hasOwnProperty(method)) {
+//            var func = Cursor.prototype[method];
+//            Tree.prototype[method] = function() {
+//                var cursor = new Cursor(this);
+//                return func.apply(cursor, arguments);
+//            };
+//        }
+//    }
     
     // Balancer
     // ---------------
@@ -273,6 +195,7 @@
     };
     
     Balancer.prototype.rotateLeft = function(node) {
+
         var right = node.right;
         this.replaceNode(node, right);
 
@@ -303,7 +226,7 @@
         }
 
         if(right !== null && b !== null) {
-          right.count = right.count - b.count;
+          right.count = right.count - b.count - 1;
         }   
         
         // Update pointers
@@ -314,6 +237,7 @@
     };
     
     Balancer.prototype.rotateRight = function(node) {
+
         var left = node.left;
         this.replaceNode(node, left);
 
@@ -324,8 +248,11 @@
          *     / \                / \
          *    a   b              b   c
          *
-         *   node is y
-         *   x is node.left
+         *   node is            y
+         *   node.left is       x
+         *   node.left.left is  a
+         *   node.left.right is b
+         *   node.right is      c
          *
          *   a is left.left
          *   b is left.right
@@ -339,13 +266,26 @@
         var b = left.right;
         var c = node.right;
 
-        if(left !== null && c !== null) {
-          left.count = left.count + c.count;
+        // y = y + b
+        if(node !== null && b !== null) {
+          node.count = node.count + b.count;
+        }
+
+        // y = y - x
+        if(node !== null && node.left !== null) {
+          node.count = node.count - node.left.count; 
+        }
+
+        // x = x - b
+        if(left !== null && b !== null) {
+          left.count = left.count - b.count;
         } 
 
-        if(node !== null && a !== null) {
-          node.count = node.count - a.count;
+        // x = x + y
+        if(left != null && node != null) {
+          left.count = left.count + node.count;
         }
+
         
         // Update pointers
         node.left = left.right;
