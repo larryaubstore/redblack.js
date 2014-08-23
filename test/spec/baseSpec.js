@@ -168,8 +168,6 @@ describe("Basics tests", function () {
   });
 
   it("prune cursor", function () {
-
-
       var tree = redblack.tree();
       tree.insert(50, "test");
       tree.insert(6, "test");
@@ -183,14 +181,16 @@ describe("Basics tests", function () {
       var height = heightcursor.walk(tree.root, 0);
       expect(height).toEqual(2);
 
-      var nodelist = heightcursor.prune(tree.root, 2);
-      debugger;
+      heightcursor.prune(tree.root, 2);
 
+      var anode = tree.getnode(6);
+      expect(anode).toBeDefined();
+      expect(anode.left).toEqual(null);
+      expect(anode.right).toEqual(null);
 
+      anode = tree.getnode(76);
+      expect(anode).toBeDefined();
+      expect(anode.left).toEqual(null);
+      expect(anode.right).toEqual(null);
   });
-
-  
-
-
-
 });
