@@ -1,4 +1,5 @@
-var cursor = require('./lib/cursor');
+var Cursor = require('./lib/cursor').Cursor;
+var HeightCursor = require('./lib/heightcursor').HeightCursor;
 
 (function() {
     
@@ -137,31 +138,16 @@ var cursor = require('./lib/cursor');
     };
 
     Tree.prototype.prune = function(start) {
-      //var prunecursor = new PruneCursor(start);
-      //prunecursor.walk(this.root);
-
-      var heightcursor = new cursor.HeightCursor(start);
+      var heightcursor = new HeightCursor(start);
       var blackheight = heightcursor.walk(this.root, 0);
 
-      var prunecursor = new cursor.PruneCursor(blackheight);
-      prunocursor.walk(this.root);
+      heightcursor.prune(this.root, blackheight);
     };
     
     Tree.prototype.range = function(start, end) {
-        return new cursor.Cursor(this, start, end);
+        return new Cursor(this, start, end);
     };
 
-    
-    // Proxy cursor methods
-//    for (var method in Cursor.prototype) {
-//        if (Cursor.prototype.hasOwnProperty(method)) {
-//            var func = Cursor.prototype[method];
-//            Tree.prototype[method] = function() {
-//                var cursor = new Cursor(this);
-//                return func.apply(cursor, arguments);
-//            };
-//        }
-//    }
     
     // Balancer
     // ---------------
@@ -206,28 +192,26 @@ var cursor = require('./lib/cursor');
          *       / \           / \
          *      b   c         a   b
 
-         *    node is x
-         *    y is node.right
-         *    a is node.left
-         *    b is right.left
-         *    c is right.right
+         *    node is y
+         *    x = parent
+         *    a = parent.left 
+         *    b = left
+         *    c = right
          *
-         *    node = node + b
-         *    right = right - b 
+         *    y = y + x
+         *    x = x - y - c
+         *   ===============
+              
+              y = x
+              x = x - c
          */
 
+        var parent = node.parent;
+        node.count = parent.count;
 
-        var a = node.left;
-        var b = right.left;
-        var c = right.right;
-
-        if(node !== null && b !== null) {
-          node.count = node.count + b.count;
+        if(node.right != null) {
+          parent.count = parent.count - node.right.count;
         }
-
-        if(right !== null && b !== null) {
-          right.count = right.count - b.count - 1;
-        }   
         
         // Update pointers
         node.right = right.left;
@@ -248,42 +232,29 @@ var cursor = require('./lib/cursor');
          *     / \                / \
          *    a   b              b   c
          *
-         *   node is            y
-         *   node.left is       x
-         *   node.left.left is  a
-         *   node.left.right is b
-         *   node.right is      c
+         *   node is x
+         *   a = node.left
+         *   y = parent
+         *   c = parent.right
          *
-         *   a is left.left
-         *   b is left.right
-         *   c is node.right
+         *
+             x = x + y + c
+             y = y - x - a
+            ===============
 
-         *   left = left + c
-         *   node = node - a
+             x = y + c
+             y = y - a
          */
+        var parent = node.parent;
 
-        var a = left.left;
-        var b = left.right;
-        var c = node.right;
-
-        // y = y + b
-        if(node !== null && b !== null) {
-          node.count = node.count + b.count;
+        if(parent.right != null) {
+          node.count = parent.count + parent.right.count; 
+        } else {
+          node.count = parent.count;
         }
 
-        // y = y - x
-        if(node !== null && node.left !== null) {
-          node.count = node.count - node.left.count; 
-        }
-
-        // x = x - b
-        if(left !== null && b !== null) {
-          left.count = left.count - b.count;
-        } 
-
-        // x = x + y
-        if(left != null && node != null) {
-          left.count = left.count + node.count;
+        if(node.left != null) {
+          parent.count = parent.count - node.left.count;
         }
 
         
