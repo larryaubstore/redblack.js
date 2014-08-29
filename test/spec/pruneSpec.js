@@ -71,13 +71,28 @@ describe("Prune", function () {
     });
 
     tree.insert(50, "test");
+    expect(tree.count).toEqual(1);
+
     tree.insert(6, "test");
+    expect(tree.count).toEqual(2);
+
     tree.insert(98, "test");
+    expect(tree.count).toEqual(3);
+
     tree.insert(2, "test2");
+    expect(tree.count).toEqual(4);
+
     tree.insert(2, "test2");
+    expect(tree.count).toEqual(4);
+
     tree.insert(76, "test");
+    expect(tree.count).toEqual(5);
+
     tree.insert(55, "test");
+    expect(tree.count).toEqual(6);
+
     tree.insert(100, "test");
+    expect(tree.count).toEqual(6);
     
 
     /*
