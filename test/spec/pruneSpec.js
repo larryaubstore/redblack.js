@@ -64,9 +64,8 @@ describe("Prune", function () {
     var tree = new Tree(7, function (deletedelement) {
 
       expect(deletedelement).toBeDefined();
-      expect(deletedelement.length).toEqual(2);
+      expect(deletedelement.length).toEqual(1);
       expect(deletedelement[0]).toEqual("test2");
-      expect(deletedelement[1]).toEqual("test2");
       cbcalled = true;
       expect(tree.count).toEqual(6);
     });
