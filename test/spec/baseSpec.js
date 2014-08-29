@@ -4,6 +4,13 @@ var Node = require('../../lib/Node').Node;
 
 describe("Basic test", function () {
 
+  it("constructor", function () {
+    var tree = redblack.tree(5, function() {});
+    expect(tree).toBeDefined();
+    expect(tree.limit).toEqual(5);
+    expect(tree.delcallback).toBeDefined();
+  });
+
   it("create tree", function () {
     var tree = redblack.tree();
     expect(tree).toBeDefined();

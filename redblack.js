@@ -35,8 +35,8 @@ var Tree  = require('./lib/Tree').Tree;
         return redblack;
     };
     
-    redblack.tree = function() {
-        return new Tree();
+    redblack.tree = function(limit, callback) {
+        return new Tree(limit, callback);
     };
     
     var BLACK = redblack.BLACK = 'black';
