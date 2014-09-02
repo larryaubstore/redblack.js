@@ -34,8 +34,10 @@ describe("Tree", function () {
   it("tree insert same key twice", function () {
     var tree = new Tree();
 
-    tree.insert(1, "value");
-    tree.insert(1, "value");
+    var result = tree.insert(1, "value");
+    expect(result).toEqual(true);
+    result = tree.insert(1, "value");
+    expect(result).toEqual(false);
 
     var key = tree.getnode(1);
     expect(key.value.length).toEqual(1);
