@@ -38,6 +38,7 @@ describe("Prune", function () {
     tree.insert(2, "test2");
     tree.insert(76, "test");
     tree.insert(55, "test");
+    expect(tree.count).toEqual(6);
     tree.insert(100, "test");
     
 
