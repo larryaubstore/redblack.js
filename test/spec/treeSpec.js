@@ -31,15 +31,4 @@ describe("Tree", function () {
     expect(tree.deleteelement).toHaveBeenCalled();
   });
 
-  it("tree insert same key twice", function () {
-    var tree = new Tree();
-
-    var result = tree.insert(1, "value");
-    expect(result).toEqual(true);
-    result = tree.insert(1, "value");
-    expect(result).toEqual(false);
-
-    var key = tree.getnode(1);
-    expect(key.value.length).toEqual(1);
-  });
 });

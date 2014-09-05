@@ -4,21 +4,6 @@ var Tree  = require('../../lib/Tree').Tree;
 
 describe("Prune", function () {
 
-  it("Basic test", function () {
-
-    var nodea = new Node("a", "value1");
-    var nodeb = new Node("b", "value2");
-    var nodec = new Node("c", "value3");
-
-
-    nodea.left = nodeb;
-    nodeb.left = nodec
-    var prunecursor = new Prune({root:nodea, delete: function () {}});
-
-    var result = prunecursor.prune();
-
-    expect(result).toEqual(["value3"]);
-  });
 
   it("Limit test", function () {
 
@@ -27,7 +12,7 @@ describe("Prune", function () {
     var tree = new Tree(7, function (deletedelement) {
 
       expect(deletedelement).toBeDefined();
-      expect(deletedelement).toEqual(["test2"]);
+      expect(deletedelement).toEqual(2);
       cbcalled = true;
       expect(tree.count).toEqual(6);
     });
@@ -62,15 +47,16 @@ describe("Prune", function () {
 
     var cbcalled = false;
     // TO DO
-    var tree = new Tree(7, function (deletedelement) {
+    var tree = new Tree(7, function (deletedkeys, deletedvalues) {
 
-      expect(deletedelement).toBeDefined();
-      expect(deletedelement.length).toEqual(1);
-      expect(deletedelement[0]).toEqual("test2");
+      expect(deletedkeys).toBeDefined();
+      expect(deletedkeys).toEqual(2);
+      expect(deletedvalues).toEqual(["test2", "test2"]);
       cbcalled = true;
-      expect(tree.count).toEqual(6);
+      expect(tree.count).toEqual(5);
     });
 
+    
     tree.insert(50, "test");
     expect(tree.count).toEqual(1);
 
@@ -84,16 +70,16 @@ describe("Prune", function () {
     expect(tree.count).toEqual(4);
 
     tree.insert(2, "test2");
-    expect(tree.count).toEqual(4);
-
-    tree.insert(76, "test");
     expect(tree.count).toEqual(5);
 
-    tree.insert(55, "test");
+    tree.insert(76, "test");
     expect(tree.count).toEqual(6);
 
-    tree.insert(100, "test");
-    expect(tree.count).toEqual(6);
+    tree.insert(55, "test");
+    expect(tree.count).toEqual(5);
+
+//    tree.insert(100, "test");
+//    expect(tree.count).toEqual(6);
     
 
     /*
