@@ -21,14 +21,11 @@ Usage
 Download
 --------
 
-Releases are available on [GitHub](https://github.com/scttnlsn/redblack.js/downloads)
-or via [NPM](http://search.npmjs.org/#/redblack).
-
-    npm install redblack
+    npm install git://github.com/larryaubstore/redblack.js
 
 **Development:** [redblack.js](https://raw.github.com/scttnlsn/redblack.js/master/redblack.js)
 
-**Production:**  [redblack.min.js](https://raw.github.com/scttnlsn/redblack.js/master/redblack.min.js)
+
 
 Tree API
 --------
@@ -67,6 +64,15 @@ Returns a [Cursor](#cursor) (see below) for traversing the tree in the given ran
 * start - the lower bound of the range, if `undefined` then assumed to be the minimum value in the tree
 * end - the upper bound of the range, if `undefined` the assumed to be the maximum value in the tree
 
+### desc(limit)
+
+Returns keys from biggest to smallest. 
+
+*Arguments:*
+
+* limit (optional) - Number of keys to return.
+
+
 ### forEach(iterator)
 
 [Cursor](#cursor) shortcut for iterating over the entire tree (see [forEach](#forEach) below).
@@ -74,6 +80,8 @@ Returns a [Cursor](#cursor) (see below) for traversing the tree in the given ran
 ### map(iterator)
 
 [Cursor](#cursor) shortcut for mapping over the entire tree (see [map](#map) below).
+
+
 
 <a name="cursor" />
 Cursor API
